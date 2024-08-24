@@ -1,8 +1,10 @@
 plugins {
     id "com.android.application"
     id "kotlin-android"
+    id 'com.google.gms.google-services'
     // The Flutter Gradle Plugin must be applied after the Android and Kotlin Gradle plugins.
     id "dev.flutter.flutter-gradle-plugin"
+   
 }
 
 def localProperties = new Properties()
@@ -21,11 +23,11 @@ if (flutterVersionCode == null) {
 def flutterVersionName = localProperties.getProperty("flutter.versionName")
 if (flutterVersionName == null) {
     flutterVersionName = "1.0"
-}
+} 
 
 android {
     namespace = "com.example.scoreboardapp"
-    compileSdk = flutter.compileSdkVersion
+    compileSdk =34
     ndkVersion = flutter.ndkVersion
 
     compileOptions {
@@ -38,10 +40,11 @@ android {
         applicationId = "com.example.scoreboardapp"
         // You can update the following values to match your application needs.
         // For more information, see: https://docs.flutter.dev/deployment/android#reviewing-the-gradle-build-configuration.
-        minSdk = flutter.minSdkVersion
-        targetSdk = flutter.targetSdkVersion
+        minSdkVersion = 21
+        targetSdk = 34
         versionCode = flutterVersionCode.toInteger()
         versionName = flutterVersionName
+        multiDexEnabled true
     }
 
     buildTypes {
@@ -56,3 +59,9 @@ android {
 flutter {
     source = "../.."
 }
+
+// dependencies {
+ 
+//     implementation platform('com.google.firebase:firebase-bom:33.1.2')
+//     implementation 'com.google.firebase:firebase-analytics'
+// }

@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "255583794574",
+    "project_id": "aitrich",
+    "storage_bucket": "aitrich.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:255583794574:android:68448b820f04e8c399a0df",
+        "android_client_info": {
+          "package_name": "com.example.scoreboardapp"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCgJe7do2j5CIWybNZBKp06c79GKUaG9Mg"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
