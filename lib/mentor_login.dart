@@ -23,9 +23,10 @@ class _LoginScreenState extends State<LoginScreen> {
     final String password = _passwordController.text;
 
     if (username == validUsername && password == validPassword) {
-      Navigator.of(context).push(
-        MaterialPageRoute(builder: (context) => const Mentor_View()),
-      );
+      
+      Navigator.pushNamed(context, '/mentorview');
+
+
     } else {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Invalid username or password')),

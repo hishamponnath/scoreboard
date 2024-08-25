@@ -46,11 +46,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     width: double.infinity,
                     child: ElevatedButton(
                       onPressed: () {
-                        Navigator.of(context).push(
-                          MaterialPageRoute(
-                            builder: (context) => const LoginScreen(),
-                          ),
-                        );
+                        Navigator.pushNamed(context, '/login');
                       },
                       style: ElevatedButton.styleFrom(
                         backgroundColor:

@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:scoreboardapp/addstudents.dart';
+import 'package:scoreboardapp/updatestd.dart';
 
 class Mentor_View extends StatefulWidget {
   const Mentor_View({super.key});
@@ -27,9 +28,7 @@ class _Mentor_ViewState extends State<Mentor_View> {
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
-          Navigator.of(context).push(
-            MaterialPageRoute(builder: (context) => const addstd()),
-          );
+          Navigator.pushNamed(context, '/add');
         },
         backgroundColor: Colors.blue[900],
         child: const Icon(Icons.add, color: Colors.white),
@@ -87,7 +86,14 @@ class _Mentor_ViewState extends State<Mentor_View> {
                           Row(
                             children: [
                               IconButton(
-                                onPressed: () {},
+                                onPressed: () {
+                                  Navigator.pushNamed(arguments: {
+                                    'studentname': studentsSnap['studentname'],
+                                    'course': studentsSnap['course'],
+                                    'score': studentsSnap['score'],
+                                    'id': studentsSnap.id
+                                  }, context, '/update');
+                                },
                                 icon: Icon(
                                   Icons.edit,
                                 ),
