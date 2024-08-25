@@ -22,7 +22,7 @@ class _updatestdState extends State<updatestd> {
       'course': stdcourse.text,
       'score': stdscore.text,
     };
-    students.doc(docId).update(data);
+    students.doc(docId).update(data).then((Value) => Navigator.pop(context));
   }
 
   @override
@@ -79,7 +79,6 @@ class _updatestdState extends State<updatestd> {
               ),
               onPressed: () {
                 updatedstudents(docId);
-               
               },
               child: const Text(
                 "Update",

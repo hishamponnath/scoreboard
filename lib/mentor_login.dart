@@ -14,7 +14,7 @@ class _LoginScreenState extends State<LoginScreen> {
 
   final String validUsername = "aitrich";
   final String validPassword = "aitrich";
- 
+
   // Variable to track password visibility
   bool _isPasswordVisible = false;
 
@@ -23,10 +23,7 @@ class _LoginScreenState extends State<LoginScreen> {
     final String password = _passwordController.text;
 
     if (username == validUsername && password == validPassword) {
-      
       Navigator.pushNamed(context, '/mentorview');
-
-
     } else {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Invalid username or password')),
@@ -133,6 +130,18 @@ class _LoginScreenState extends State<LoginScreen> {
               ),
             ),
           ),
+          Padding(
+            padding: const EdgeInsets.only(top: 30),
+            child: IconButton(
+                onPressed: () {
+                  Navigator.pop(context);
+                },
+                icon: Icon(
+                  Icons.arrow_back_sharp,
+                  size: 30,
+                  color: Colors.white,
+                )),
+          )
         ],
       ),
     );

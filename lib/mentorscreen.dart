@@ -2,6 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:scoreboardapp/addstudents.dart';
 import 'package:scoreboardapp/updatestd.dart';
+import 'package:lottie/lottie.dart';
 
 class Mentor_View extends StatefulWidget {
   const Mentor_View({super.key});
@@ -13,6 +14,10 @@ class Mentor_View extends StatefulWidget {
 class _Mentor_ViewState extends State<Mentor_View> {
   final CollectionReference students =
       FirebaseFirestore.instance.collection('students');
+
+  void deletestudent(docId) {
+    students.doc(docId).delete();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -45,77 +50,82 @@ class _Mentor_ViewState extends State<Mentor_View> {
                       snapshot.data.docs[index];
                   return Padding(
                     padding: const EdgeInsets.all(10.0),
-                    child: Container(
-                      height: 80,
-                      decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(20),
-                          color: Colors.white,
-                          boxShadow: [
-                            BoxShadow(
-                                color: const Color.fromARGB(255, 206, 205, 205),
-                                blurRadius: 10,
-                                spreadRadius: 15)
-                          ]),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Padding(
-                            padding: const EdgeInsets.all(8.0),
-                            child: Container(
+                    child: Card(
+                      elevation: 4,
+                      color: const Color.fromARGB(255, 204, 209, 213),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(20),
+                      ),
+                      shadowColor: const Color.fromARGB(255, 206, 205, 205),
+                      child: Container(
+                        height: 100,
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Padding(
+                              padding: const EdgeInsets.all(8.0),
                               child: CircleAvatar(
-                                backgroundColor: Colors.blue,
-                                radius: 30,
+                                backgroundColor: Colors.white,
+                                radius: 40,
                                 child: Text(studentsSnap['score'].toString()),
                               ),
                             ),
-                          ),
-                          Column(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              Text(
-                                studentsSnap['studentname'],
-                                style: TextStyle(
-                                    fontSize: 18, fontWeight: FontWeight.bold),
-                              ),
-                              Text(
-                                studentsSnap['course'],
-                                style: TextStyle(fontSize: 18),
-                              ),
-                            ],
-                          ),
-                          Row(
-                            children: [
-                              IconButton(
-                                onPressed: () {
-                                  Navigator.pushNamed(arguments: {
-                                    'studentname': studentsSnap['studentname'],
-                                    'course': studentsSnap['course'],
-                                    'score': studentsSnap['score'],
-                                    'id': studentsSnap.id
-                                  }, context, '/update');
-                                },
-                                icon: Icon(
-                                  Icons.edit,
+                            Column(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                Text(
+                                  studentsSnap['studentname'],
+                                  style: TextStyle(
+                                      fontSize: 28,
+                                      fontWeight: FontWeight.bold),
                                 ),
-                                iconSize: 30,
-                                color: Colors.blue,
-                              ),
-                              IconButton(
-                                onPressed: () {},
-                                icon: Icon(Icons.delete),
-                                iconSize: 30,
-                                color: Colors.red,
-                              )
-                            ],
-                          )
-                        ],
+                                Text(
+                                  studentsSnap['course'],
+                                  style: TextStyle(fontSize: 18),
+                                ),
+                              ],
+                            ),
+                            Row(
+                              children: [
+                                IconButton(
+                                  onPressed: () {
+                                    Navigator.pushNamed(
+                                      context,
+                                      '/update',
+                                      arguments: {
+                                        'studentname':
+                                            studentsSnap['studentname'],
+                                        'course': studentsSnap['course'],
+                                        'score': studentsSnap['score'],
+                                        'id': studentsSnap.id,
+                                      },
+                                    );
+                                  },
+                                  icon: Icon(Icons.edit),
+                                  iconSize: 30,
+                                  color: Colors.blue,
+                                ),
+                                IconButton(
+                                  onPressed: () {
+                                    deletestudent(studentsSnap.id);
+                                  },
+                                  icon: Icon(Icons.delete),
+                                  iconSize: 30,
+                                  color: Colors.red,
+                                ),
+                              ],
+                            ),
+                          ],
+                        ),
                       ),
                     ),
                   );
                 },
               );
             }
-            return Container(); //set a lotti for no data
+            return Center(
+              child: Container(),
+            ); //set a lotti for no data
           }),
     );
   }
