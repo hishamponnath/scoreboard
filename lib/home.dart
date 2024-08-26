@@ -124,27 +124,32 @@ class _HomeScreenState extends State<HomeScreen> {
                         child: Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
-                            Padding(
-                              padding: const EdgeInsets.all(15.0),
-                              child: Column(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                crossAxisAlignment: CrossAxisAlignment
-                                    .start, // Align text to the start
-                                children: [
-                                  Text(
-                                    studentsSnap['studentname'],
-                                    style: TextStyle(
-                                      fontSize: 28,
-                                      fontWeight: FontWeight.bold,
+                            Expanded(
+                              child: Padding(
+                                padding: const EdgeInsets.all(15.0),
+                                child: Column(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Text(
+                                      studentsSnap['studentname'],
+                                      style: const TextStyle(
+                                        fontSize: 28,
+                                        fontWeight: FontWeight.bold,
+                                      ),
+                                      overflow: TextOverflow.ellipsis,
+                                      maxLines: 1,
                                     ),
-                                  ),
-                                  Text(
-                                    studentsSnap['course'],
-                                    style: TextStyle(
-                                      fontSize: 18,
+                                    Text(
+                                      studentsSnap['course'],
+                                      style: const TextStyle(
+                                        fontSize: 18,
+                                      ),
+                                      overflow: TextOverflow.ellipsis,
+                                      maxLines: 1,
                                     ),
-                                  ),
-                                ],
+                                  ],
+                                ),
                               ),
                             ),
                             Padding(
@@ -154,7 +159,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                 radius: 40,
                                 child: Text(
                                   studentsSnap['score'].toString(),
-                                  style: TextStyle(
+                                  style: const TextStyle(
                                     fontSize:
                                         18, // Adjust text size if necessary
                                   ),
