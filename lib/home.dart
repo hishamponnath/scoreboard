@@ -1,7 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:scoreboardapp/mentor_login.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_core/firebase_core.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -13,6 +11,7 @@ class HomeScreen extends StatefulWidget {
 class _HomeScreenState extends State<HomeScreen> {
   final CollectionReference students =
       FirebaseFirestore.instance.collection('students');
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -110,6 +109,23 @@ class _HomeScreenState extends State<HomeScreen> {
                 itemBuilder: (context, index) {
                   final DocumentSnapshot studentsSnap =
                       snapshot.data.docs[index];
+
+                  // Get the score from Firestore as a string
+                  var scoreString = studentsSnap['score'].toString();
+
+                  // Convert the string to double for progress bar
+                  double progressValue = 0.0;
+                  try {
+                    // Convert the string to a double and divide by 100 to get the progress value
+                    progressValue = double.parse(scoreString) / 100;
+                  } catch (e) {
+                    // Handle conversion error
+                    print("Error converting score to double: $e");
+                  }
+
+                  // Calculate percentage value for display
+                  int percentageValue = (progressValue * 100).toInt();
+
                   return Padding(
                     padding: const EdgeInsets.all(10.0),
                     child: Card(
@@ -154,16 +170,30 @@ class _HomeScreenState extends State<HomeScreen> {
                             ),
                             Padding(
                               padding: const EdgeInsets.all(8.0),
-                              child: CircleAvatar(
-                                backgroundColor: Colors.white,
-                                radius: 40,
-                                child: Text(
-                                  studentsSnap['score'].toString(),
-                                  style: const TextStyle(
-                                    fontSize:
-                                        18, // Adjust text size if necessary
+                              child: Stack(
+                                alignment: Alignment.center,
+                                children: [
+                                  SizedBox(
+                                    width: 90,
+                                    height: 100,
+                                    child: CircularProgressIndicator(
+                                      value:
+                                          progressValue, // Dynamic progress value
+                                      strokeWidth: 8.0,
+                                      backgroundColor: Colors.grey.shade300,
+                                      valueColor:
+                                          const AlwaysStoppedAnimation<Color>(
+                                              Color.fromARGB(255, 10, 29, 151)),
+                                    ),
                                   ),
-                                ),
+                                  Text(
+                                    '$percentageValue%', // Display progress percentage
+                                    style: const TextStyle(
+                                      fontSize: 20,
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
+                                ],
                               ),
                             ),
                           ],
@@ -174,7 +204,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 },
               );
             }
-            return Container(); //set a lotti for no data
+            return Container(); // Set a Lottie animation or other widget for no data
           }),
     );
   }

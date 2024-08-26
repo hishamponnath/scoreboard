@@ -1,8 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-import 'package:scoreboardapp/addstudents.dart';
-import 'package:scoreboardapp/updatestd.dart';
-import 'package:lottie/lottie.dart';
 
 class Mentor_View extends StatefulWidget {
   const Mentor_View({super.key});
@@ -48,6 +45,23 @@ class _Mentor_ViewState extends State<Mentor_View> {
                 itemBuilder: (context, index) {
                   final DocumentSnapshot studentsSnap =
                       snapshot.data.docs[index];
+
+                  // Get the score from Firestore as a string
+                  var scoreString = studentsSnap['score'].toString();
+
+                  // Convert the string to double for progress bar
+                  double progressValue = 0.0;
+                  try {
+                    // Convert the string to a double and divide by 100 to get the progress value
+                    progressValue = double.parse(scoreString) / 100;
+                  } catch (e) {
+                    // Handle conversion error
+                    print("Error converting score to double: $e");
+                  }
+
+                  // Calculate percentage value for display
+                  int percentageValue = (progressValue * 100).toInt();
+
                   return Padding(
                     padding: const EdgeInsets.all(10.0),
                     child: Card(
@@ -57,33 +71,65 @@ class _Mentor_ViewState extends State<Mentor_View> {
                         borderRadius: BorderRadius.circular(20),
                       ),
                       shadowColor: const Color.fromARGB(255, 206, 205, 205),
-                      child: Container(
+                      child: SizedBox(
                         height: 100,
                         child: Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
                             Padding(
                               padding: const EdgeInsets.all(8.0),
-                              child: CircleAvatar(
-                                backgroundColor: Colors.white,
-                                radius: 40,
-                                child: Text(studentsSnap['score'].toString()),
+                              child: Stack(
+                                alignment: Alignment.center,
+                                children: [
+                                  SizedBox(
+                                    width: 80,
+                                    height: 80,
+                                    child: CircularProgressIndicator(
+                                      value: progressValue,
+                                      strokeWidth: 8.0,
+                                      backgroundColor: Colors.grey.shade300,
+                                      valueColor:
+                                          const AlwaysStoppedAnimation<Color>(
+                                              Color.fromARGB(255, 10, 29, 151)),
+                                    ),
+                                  ),
+                                  Text(
+                                    '$percentageValue%', // Display progress percentage
+                                    style: const TextStyle(
+                                      fontSize: 20,
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
+                                ],
                               ),
                             ),
-                            Column(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                Text(
-                                  studentsSnap['studentname'],
-                                  style: TextStyle(
-                                      fontSize: 28,
-                                      fontWeight: FontWeight.bold),
+                            Expanded(
+                              child: Padding(
+                                padding: const EdgeInsets.all(15.0),
+                                child: Column(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Text(
+                                      studentsSnap['studentname'],
+                                      style: const TextStyle(
+                                        fontSize: 28,
+                                        fontWeight: FontWeight.bold,
+                                      ),
+                                      overflow: TextOverflow.ellipsis,
+                                      maxLines: 1,
+                                    ),
+                                    Text(
+                                      studentsSnap['course'],
+                                      style: const TextStyle(
+                                        fontSize: 18,
+                                      ),
+                                      overflow: TextOverflow.ellipsis,
+                                      maxLines: 1,
+                                    ),
+                                  ],
                                 ),
-                                Text(
-                                  studentsSnap['course'],
-                                  style: TextStyle(fontSize: 18),
-                                ),
-                              ],
+                              ),
                             ),
                             Row(
                               children: [
@@ -101,7 +147,7 @@ class _Mentor_ViewState extends State<Mentor_View> {
                                       },
                                     );
                                   },
-                                  icon: Icon(Icons.edit),
+                                  icon: const Icon(Icons.edit),
                                   iconSize: 30,
                                   color: Colors.blue,
                                 ),
@@ -109,7 +155,7 @@ class _Mentor_ViewState extends State<Mentor_View> {
                                   onPressed: () {
                                     deletestudent(studentsSnap.id);
                                   },
-                                  icon: Icon(Icons.delete),
+                                  icon: const Icon(Icons.delete),
                                   iconSize: 30,
                                   color: Colors.red,
                                 ),
@@ -125,7 +171,7 @@ class _Mentor_ViewState extends State<Mentor_View> {
             }
             return Center(
               child: Container(),
-            ); //set a lotti for no data
+            ); //set a lottie for no data
           }),
     );
   }
