@@ -11,19 +11,73 @@ class HomeScreen extends StatefulWidget {
 class _HomeScreenState extends State<HomeScreen> {
   final CollectionReference students =
       FirebaseFirestore.instance.collection('students');
+  final TextEditingController _searchController = TextEditingController();
+  List<DocumentSnapshot> _filteredStudents = [];
+  bool _isSearchVisible = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _searchController.addListener(_filterStudents);
+  }
+
+  void _filterStudents() {
+    String query = _searchController.text.toLowerCase();
+    setState(() {
+      _filteredStudents = [];
+      students.get().then((QuerySnapshot querySnapshot) {
+        querySnapshot.docs.forEach((doc) {
+          if (doc['studentname'].toString().toLowerCase().contains(query)) {
+            _filteredStudents.add(doc);
+          }
+        });
+      });
+    });
+  }
+
+  @override
+  void dispose() {
+    _searchController.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         centerTitle: true,
-        title: const Text(
-          "AITRICH ACADEMY",
-          style: TextStyle(fontWeight: FontWeight.bold, color: Colors.white),
-        ),
+        title: _isSearchVisible
+            ? TextField(
+                controller: _searchController,
+                decoration: InputDecoration(
+                  hintText: 'Search by name...',
+                  hintStyle: TextStyle(color: Colors.white70),
+                  border: InputBorder.none,
+                ),
+                style: TextStyle(color: Colors.white),
+                autofocus: true,
+              )
+            : const Text(
+                "AITRICH ACADEMY",
+                style:
+                    TextStyle(fontWeight: FontWeight.bold, color: Colors.white),
+              ),
         backgroundColor: Colors.blue[900],
-        iconTheme: const IconThemeData(
-            color: Colors.white), // Set drawer icon color to white
+        iconTheme: const IconThemeData(color: Colors.white),
+        actions: [
+          IconButton(
+            icon: Icon(_isSearchVisible ? Icons.close : Icons.search),
+            onPressed: () {
+              setState(() {
+                _isSearchVisible = !_isSearchVisible;
+                if (!_isSearchVisible) {
+                  _searchController.clear();
+                  _filteredStudents.clear();
+                }
+              });
+            },
+          ),
+        ],
       ),
       drawer: Drawer(
         backgroundColor: Colors.white,
@@ -41,171 +95,136 @@ class _HomeScreenState extends State<HomeScreen> {
                 ),
               ),
             ),
-            Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: SizedBox(
-                  width: double.infinity,
-                  child: ElevatedButton(
-                    onPressed: () {
-                      Navigator.pushNamed(context, '/login');
-                    },
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: const Color.fromARGB(255, 147, 192, 229),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(10),
-                      ),
-                    ),
-                    child: const Text(
-                      "Mentor",
-                      style: TextStyle(color: Colors.black),
-                    ),
-                  )),
-            ),
-            Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: SizedBox(
-                  width: double.infinity,
-                  child: ElevatedButton(
-                    onPressed: () {},
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: const Color.fromARGB(255, 147, 192, 229),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(10),
-                      ),
-                    ),
-                    child: const Text(
-                      "Events",
-                      style: TextStyle(color: Colors.black),
-                    ),
-                  )),
-            ),
-            Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: SizedBox(
-                  width: double.infinity,
-                  child: ElevatedButton(
-                    onPressed: () {},
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: const Color.fromARGB(255, 147, 192, 229),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(10),
-                      ),
-                    ),
-                    child: const Text(
-                      "About Us",
-                      style: TextStyle(color: Colors.black),
-                    ),
-                  )),
-            ),
+            _buildDrawerButton(context, "Mentor", '/login'),
+            _buildDrawerButton(context, "Events", '/events'),
+            _buildDrawerButton(context, "About Us", '/about'),
           ],
         ),
       ),
       body: StreamBuilder(
-          stream: students.snapshots(),
-          builder: (context, AsyncSnapshot snapshot) {
-            if (snapshot.hasData) {
-              return ListView.builder(
-                itemCount: snapshot.data!.docs.length,
-                itemBuilder: (context, index) {
-                  final DocumentSnapshot studentsSnap =
-                      snapshot.data.docs[index];
+        stream: students.snapshots(),
+        builder: (context, AsyncSnapshot snapshot) {
+          if (snapshot.hasData) {
+            final data = _filteredStudents.isNotEmpty
+                ? _filteredStudents
+                : snapshot.data!.docs;
+            return ListView.builder(
+              itemCount: data.length,
+              itemBuilder: (context, index) {
+                final DocumentSnapshot studentsSnap = data[index];
 
-                  // Get the score from Firestore as a string
-                  var scoreString = studentsSnap['score'].toString();
+                var scoreString = studentsSnap['score'].toString();
+                double progressValue = 0.0;
+                try {
+                  progressValue = double.parse(scoreString) / 100;
+                } catch (e) {
+                  print("Error converting score to double: $e");
+                }
+                int percentageValue = (progressValue * 100).toInt();
 
-                  // Convert the string to double for progress bar
-                  double progressValue = 0.0;
-                  try {
-                    // Convert the string to a double and divide by 100 to get the progress value
-                    progressValue = double.parse(scoreString) / 100;
-                  } catch (e) {
-                    // Handle conversion error
-                    print("Error converting score to double: $e");
-                  }
-
-                  // Calculate percentage value for display
-                  int percentageValue = (progressValue * 100).toInt();
-
-                  return Padding(
-                    padding: const EdgeInsets.all(10.0),
-                    child: Card(
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(20),
-                      ),
-                      elevation:
-                          4, // Optional: Adjust the elevation for shadow effect
-                      color: const Color.fromARGB(255, 204, 209, 213),
-                      child: SizedBox(
-                        height: 100,
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            Expanded(
-                              child: Padding(
-                                padding: const EdgeInsets.all(15.0),
-                                child: Column(
-                                  mainAxisAlignment: MainAxisAlignment.center,
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    Text(
-                                      studentsSnap['studentname'],
-                                      style: const TextStyle(
-                                        fontSize: 28,
-                                        fontWeight: FontWeight.bold,
-                                      ),
-                                      overflow: TextOverflow.ellipsis,
-                                      maxLines: 1,
-                                    ),
-                                    Text(
-                                      studentsSnap['course'],
-                                      style: const TextStyle(
-                                        fontSize: 18,
-                                      ),
-                                      overflow: TextOverflow.ellipsis,
-                                      maxLines: 1,
-                                    ),
-                                  ],
-                                ),
-                              ),
-                            ),
-                            Padding(
-                              padding: const EdgeInsets.all(8.0),
-                              child: Stack(
-                                alignment: Alignment.center,
+                return Padding(
+                  padding: const EdgeInsets.all(10.0),
+                  child: Card(
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(20),
+                    ),
+                    elevation: 4,
+                    color: const Color.fromARGB(255, 204, 209, 213),
+                    child: SizedBox(
+                      height: 100,
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Expanded(
+                            child: Padding(
+                              padding: const EdgeInsets.all(15.0),
+                              child: Column(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
-                                  SizedBox(
-                                    width: 90,
-                                    height: 100,
-                                    child: CircularProgressIndicator(
-                                      value:
-                                          progressValue, // Dynamic progress value
-                                      strokeWidth: 8.0,
-                                      backgroundColor: Colors.grey.shade300,
-                                      valueColor:
-                                          const AlwaysStoppedAnimation<Color>(
-                                              Color.fromARGB(255, 10, 29, 151)),
-                                    ),
-                                  ),
                                   Text(
-                                    '$percentageValue%', // Display progress percentage
+                                    studentsSnap['studentname'],
                                     style: const TextStyle(
-                                      fontSize: 20,
+                                      fontSize: 28,
                                       fontWeight: FontWeight.bold,
                                     ),
+                                    overflow: TextOverflow.ellipsis,
+                                    maxLines: 1,
+                                  ),
+                                  Text(
+                                    studentsSnap['course'],
+                                    style: const TextStyle(
+                                      fontSize: 18,
+                                    ),
+                                    overflow: TextOverflow.ellipsis,
+                                    maxLines: 1,
                                   ),
                                 ],
                               ),
                             ),
-                          ],
-                        ),
+                          ),
+                          Padding(
+                            padding: const EdgeInsets.all(8.0),
+                            child: Stack(
+                              alignment: Alignment.center,
+                              children: [
+                                SizedBox(
+                                  width: 90,
+                                  height: 100,
+                                  child: CircularProgressIndicator(
+                                    value: progressValue,
+                                    strokeWidth: 8.0,
+                                    backgroundColor: Colors.grey.shade300,
+                                    valueColor:
+                                        const AlwaysStoppedAnimation<Color>(
+                                            Color.fromARGB(255, 10, 29, 151)),
+                                  ),
+                                ),
+                                Text(
+                                  '$percentageValue%',
+                                  style: const TextStyle(
+                                    fontSize: 20,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ],
                       ),
                     ),
-                  );
-                },
-              );
-            }
-            return Container(); // Set a Lottie animation or other widget for no data
-          }),
+                  ),
+                );
+              },
+            );
+          }
+          return Container();
+        },
+      ),
+    );
+  }
+
+  Widget _buildDrawerButton(BuildContext context, String title, String route) {
+    return Padding(
+      padding: const EdgeInsets.all(8.0),
+      child: SizedBox(
+        width: double.infinity,
+        child: ElevatedButton(
+          onPressed: () {
+            Navigator.pushNamed(context, route);
+          },
+          style: ElevatedButton.styleFrom(
+            backgroundColor: const Color.fromARGB(255, 147, 192, 229),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(10),
+            ),
+          ),
+          child: Text(
+            title,
+            style: const TextStyle(color: Colors.black),
+          ),
+        ),
+      ),
     );
   }
 }
