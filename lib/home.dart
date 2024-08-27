@@ -26,11 +26,11 @@ class _HomeScreenState extends State<HomeScreen> {
     setState(() {
       _filteredStudents = [];
       students.get().then((QuerySnapshot querySnapshot) {
-        querySnapshot.docs.forEach((doc) {
+        for (var doc in querySnapshot.docs) {
           if (doc['studentname'].toString().toLowerCase().contains(query)) {
             _filteredStudents.add(doc);
           }
-        });
+        }
       });
     });
   }
@@ -49,12 +49,12 @@ class _HomeScreenState extends State<HomeScreen> {
         title: _isSearchVisible
             ? TextField(
                 controller: _searchController,
-                decoration: InputDecoration(
+                decoration: const InputDecoration(
                   hintText: 'Search by name...',
                   hintStyle: TextStyle(color: Colors.white70),
                   border: InputBorder.none,
                 ),
-                style: TextStyle(color: Colors.white),
+                style: const TextStyle(color: Colors.white),
                 autofocus: true,
               )
             : const Text(
@@ -169,7 +169,7 @@ class _HomeScreenState extends State<HomeScreen> {
                               alignment: Alignment.center,
                               children: [
                                 SizedBox(
-                                  width: 90,
+                                  width: 85,
                                   height: 100,
                                   child: CircularProgressIndicator(
                                     value: progressValue,
