@@ -22,7 +22,24 @@ class _updatestdState extends State<updatestd> {
       'course': stdcourse.text,
       'score': stdscore.text,
     };
-    students.doc(docId).update(data).then((Value) => Navigator.pop(context));
+
+    // Ensure score is below 100 before updating
+    int scoreValue = int.tryParse(stdscore.text) ?? 0;
+    if (scoreValue <= 100) {
+      students.doc(docId).update(data).then((value) => Navigator.pop(context));
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Score cannot be above 100.'),
+        ),
+      );
+    }
+  }
+
+  // Function to capitalize the first letter and prevent lowering it
+  String capitalizeFirstLetter(String input) {
+    if (input.isEmpty) return input;
+    return input[0].toUpperCase() + input.substring(1);
   }
 
   @override
@@ -52,24 +69,57 @@ class _updatestdState extends State<updatestd> {
               child: TextField(
                 controller: stdname,
                 decoration: const InputDecoration(
-                    border: OutlineInputBorder(), label: Text("Student Name")),
+                  border: OutlineInputBorder(),
+                  label: Text("Student Name"),
+                ),
+                onChanged: (value) {
+                  stdname.value = stdname.value.copyWith(
+                    text: capitalizeFirstLetter(value),
+                    selection: TextSelection.collapsed(
+                        offset: capitalizeFirstLetter(value).length),
+                  );
+                },
               ),
             ),
             Padding(
-              padding: EdgeInsets.all(8.0),
+              padding: const EdgeInsets.all(8.0),
               child: TextField(
                 controller: stdcourse,
-                decoration: InputDecoration(
-                    border: OutlineInputBorder(), label: Text("Course")),
+                decoration: const InputDecoration(
+                  border: OutlineInputBorder(),
+                  label: Text("Course"),
+                ),
+                onChanged: (value) {
+                  stdcourse.value = stdcourse.value.copyWith(
+                    text: capitalizeFirstLetter(value),
+                    selection: TextSelection.collapsed(
+                        offset: capitalizeFirstLetter(value).length),
+                  );
+                },
               ),
             ),
             Padding(
-              padding: EdgeInsets.all(8.0),
+              padding: const EdgeInsets.all(8.0),
               child: TextField(
                 controller: stdscore,
                 keyboardType: TextInputType.number,
-                decoration: InputDecoration(
-                    border: OutlineInputBorder(), label: Text("Score")),
+                decoration: const InputDecoration(
+                  border: OutlineInputBorder(),
+                  label: Text("Score"),
+                ),
+                onChanged: (value) {
+                  if (value.isNotEmpty) {
+                    int enteredValue = int.tryParse(value) ?? 0;
+
+                    // Restrict value to below 100
+                    if (enteredValue > 100) {
+                      stdscore.text = '100';
+                      stdscore.selection = TextSelection.fromPosition(
+                        const TextPosition(offset: 3),
+                      );
+                    }
+                  }
+                },
               ),
             ),
             ElevatedButton(
@@ -84,7 +134,7 @@ class _updatestdState extends State<updatestd> {
                 "Update",
                 style: TextStyle(fontSize: 20, color: Colors.white),
               ),
-            )
+            ),
           ],
         ),
       ),
