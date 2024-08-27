@@ -1,62 +1,89 @@
 import 'package:flutter/material.dart';
+import 'package:firebase_storage/firebase_storage.dart';
+import 'package:image_picker/image_picker.dart';
+import 'dart:io';
 
-void main() {
-  runApp(const MyApp());
+class UploadImageScreen extends StatefulWidget {
+  @override
+  _UploadImageScreenState createState() => _UploadImageScreenState();
 }
 
-class MyApp extends StatelessWidget {
-  const MyApp({super.key});
+class _UploadImageScreenState extends State<UploadImageScreen> {
+  final ImagePicker _picker = ImagePicker();
+  File? _image;
 
-  @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'Circular Progress Bar',
-      theme: ThemeData(
-        primarySwatch: Colors.blue,
-      ),
-      home: const CircularProgressScreen(),
-    );
+  Future<void> _pickImage() async {
+    final pickedFile = await _picker.pickImage(source: ImageSource.gallery);
+
+    if (pickedFile != null) {
+      setState(() {
+        _image = File(pickedFile.path);
+      });
+    }
   }
-}
 
-class CircularProgressScreen extends StatefulWidget {
-  const CircularProgressScreen({super.key});
+  Future<void> _uploadImage() async {
+    if (_image == null) return;
+    try {
+      final storageRef = FirebaseStorage.instance.ref();
+      final imagesRef =
+          storageRef.child('images/${DateTime.now().toIso8601String()}');
+      final uploadTask = imagesRef.putFile(_image!);
 
-  @override
-  _CircularProgressScreenState createState() => _CircularProgressScreenState();
-}
+      // Monitor the upload task
+      uploadTask.snapshotEvents.listen((TaskSnapshot snapshot) {
+        print('Task state: ${snapshot.state}');
+        print(
+            'Progress: ${(snapshot.bytesTransferred / snapshot.totalBytes) * 100} %');
+      });
 
-class _CircularProgressScreenState extends State<CircularProgressScreen> {
+      await uploadTask.whenComplete(() async {
+        final downloadUrl = await imagesRef.getDownloadURL();
+        print('Download URL: $downloadUrl');
+        // You can now use the download URL to display the image or save it to a database
+      });
+    } catch (e) {
+      print('Error uploading image: $e');
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
- 
-    double progressValue = 0; // Initial progress value
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Circular Progress Bar Example'),
+        title: Text('Upload Image'),
       ),
-      body: Stack(
-        alignment: Alignment.center,
-        children: [
-          SizedBox(
-            width: 100,
-            height: 100,
-            child: CircularProgressIndicator(
-              value: progressValue, // Dynamic progress value
-              strokeWidth: 8.0,
-              backgroundColor: Colors.grey.shade300,
-              valueColor: const AlwaysStoppedAnimation<Color>(Colors.blue),
+      body: Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            _image != null
+                ? Image.file(
+                    _image!,
+                    height: 150,
+                    width: 150,
+                    fit: BoxFit.cover,
+                  )
+                : Text('No image selected.'),
+            SizedBox(height: 20),
+            ElevatedButton(
+              onPressed: _pickImage,
+              child: Text('Pick Image'),
             ),
-          ),
-          Text(
-            '${(progressValue * 100).toInt()}%', // Display progress percentage
-            style: const TextStyle(
-              fontSize: 20,
-              fontWeight: FontWeight.bold,
+            SizedBox(height: 20),
+            ElevatedButton(
+              onPressed: _uploadImage,
+              child: Text('Upload Image'),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }
+}
+
+void main() {
+  runApp(MaterialApp(
+    home: UploadImageScreen(),
+  ));
 }
