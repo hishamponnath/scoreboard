@@ -101,12 +101,12 @@ class _HomeScreenState extends State<HomeScreen> {
         ],
       ),
       drawer: Drawer(
-        backgroundColor: Colors.white,
+        backgroundColor: const Color.fromARGB(255, 211, 210, 214),
         child: Column(
           children: [
             DrawerHeader(
               decoration:
-                  const BoxDecoration(color: Color.fromARGB(255, 5, 47, 111)),
+                  const BoxDecoration(color: Color.fromARGB(255, 1, 28, 69)),
               child: Container(
                 decoration: const BoxDecoration(
                   image: DecorationImage(
@@ -116,9 +116,9 @@ class _HomeScreenState extends State<HomeScreen> {
                 ),
               ),
             ),
-            _buildDrawerButton(context, "Mentor", '/login'),
-            _buildDrawerButton(context, "Events", '/events'),
-            _buildDrawerButton(context, "About Us", '/about'),
+            _buildDrawerButton(context, "Mentor", '/login', Icons.person),
+            _buildDrawerButton(context, "Events", '/events', Icons.event),
+            _buildDrawerButton(context, "About Us", '/about', Icons.info),
           ],
         ),
       ),
@@ -237,24 +237,33 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
-  Widget _buildDrawerButton(BuildContext context, String title, String route) {
+  Widget _buildDrawerButton(
+      BuildContext context, String title, String route, IconData icon) {
     return Padding(
       padding: const EdgeInsets.all(8.0),
       child: SizedBox(
+        height: 50,
         width: double.infinity,
         child: ElevatedButton(
           onPressed: () {
             Navigator.pushNamed(context, route);
           },
           style: ElevatedButton.styleFrom(
-            backgroundColor: const Color.fromARGB(255, 147, 192, 229),
+            backgroundColor: Colors.white,
             shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(10),
+              borderRadius: BorderRadius.circular(30),
             ),
           ),
-          child: Text(
-            title,
-            style: const TextStyle(color: Colors.black),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.start,
+            children: [
+              Icon(icon, color: Colors.black),
+              const SizedBox(width: 30),
+              Text(
+                title,
+                style: const TextStyle(color: Colors.black, fontSize: 20),
+              ),
+            ],
           ),
         ),
       ),
