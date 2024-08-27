@@ -31,6 +31,17 @@ class _HomeScreenState extends State<HomeScreen> {
             _filteredStudents.add(doc);
           }
         }
+
+        // Sort filtered students by score in descending order
+        _filteredStudents.sort((a, b) {
+          int scoreA = a['score'] is int
+              ? a['score']
+              : int.tryParse(a['score'].toString()) ?? 0;
+          int scoreB = b['score'] is int
+              ? b['score']
+              : int.tryParse(b['score'].toString()) ?? 0;
+          return scoreB.compareTo(scoreA);
+        });
       });
     });
   }
@@ -39,6 +50,16 @@ class _HomeScreenState extends State<HomeScreen> {
   void dispose() {
     _searchController.dispose();
     super.dispose();
+  }
+
+  Color _getProgressBarColor(int score) {
+    if (score <= 33) {
+      return Colors.red;
+    } else if (score <= 66) {
+      return Colors.orange;
+    } else {
+      return Colors.green;
+    }
   }
 
   @override
@@ -108,6 +129,18 @@ class _HomeScreenState extends State<HomeScreen> {
             final data = _filteredStudents.isNotEmpty
                 ? _filteredStudents
                 : snapshot.data!.docs;
+
+            // Sort the data by score in descending order
+            data.sort((a, b) {
+              int scoreA = a['score'] is int
+                  ? a['score']
+                  : int.tryParse(a['score'].toString()) ?? 0;
+              int scoreB = b['score'] is int
+                  ? b['score']
+                  : int.tryParse(b['score'].toString()) ?? 0;
+              return scoreB.compareTo(scoreA);
+            });
+
             return ListView.builder(
               itemCount: data.length,
               itemBuilder: (context, index) {
@@ -121,6 +154,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   print("Error converting score to double: $e");
                 }
                 int percentageValue = (progressValue * 100).toInt();
+                Color progressBarColor = _getProgressBarColor(percentageValue);
 
                 return Padding(
                   padding: const EdgeInsets.all(10.0),
@@ -128,8 +162,8 @@ class _HomeScreenState extends State<HomeScreen> {
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(20),
                     ),
-                    elevation: 4,
-                    color: const Color.fromARGB(255, 204, 209, 213),
+                    elevation: 2,
+                    color: const Color.fromARGB(255, 229, 223, 255),
                     child: SizedBox(
                       height: 100,
                       child: Row(
@@ -175,9 +209,8 @@ class _HomeScreenState extends State<HomeScreen> {
                                     value: progressValue,
                                     strokeWidth: 8.0,
                                     backgroundColor: Colors.grey.shade300,
-                                    valueColor:
-                                        const AlwaysStoppedAnimation<Color>(
-                                            Color.fromARGB(255, 10, 29, 151)),
+                                    valueColor: AlwaysStoppedAnimation<Color>(
+                                        progressBarColor),
                                   ),
                                 ),
                                 Text(
