@@ -207,6 +207,14 @@ class _Mentor_ViewState extends State<Mentor_View> {
           );
         },
       ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: () {
+          Navigator.pushNamed(context, '/add');
+        },
+        backgroundColor: Colors.blue[900],
+        child: const Icon(Icons.add, color: Colors.white),
+      ),
+      floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
     );
   }
 }

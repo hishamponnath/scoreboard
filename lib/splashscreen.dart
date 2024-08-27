@@ -29,7 +29,6 @@ class _SplashScreenState extends State<SplashScreen>
       });
     });
 
-    // Navigate to HomeScreen after 4 seconds
     Timer(const Duration(seconds: 4), () {
       Navigator.pushReplacement(
         context,
@@ -56,7 +55,7 @@ class _SplashScreenState extends State<SplashScreen>
                 ),
               ),
             )
-          : Container(), // Display nothing after splash duration
+          : Container(),
     );
   }
 }
