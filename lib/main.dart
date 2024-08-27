@@ -5,7 +5,9 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:scoreboardapp/mentor_login.dart';
 import 'package:scoreboardapp/mentorscreen.dart';
+import 'package:scoreboardapp/splashscreen.dart';
 import 'package:scoreboardapp/updatestd.dart';
+// Import the SplashScreen widget
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -22,13 +24,15 @@ class scoreapp extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       routes: {
         '/': (context) => HomeScreen(),
-        '/add':(context) => addstd(),
-        '/login':(context)=> LoginScreen(),
-        '/mentorview':(context)=> Mentor_View(),
-        '/update':(context)=> updatestd(),
-        
-        },
-      initialRoute: '/',
+        '/splash': (context) => SplashScreen(
+              onThemeModeChanged: (ThemeMode mode) {},
+            ), // Add SplashScreen route
+        '/add': (context) => addstd(),
+        '/login': (context) => LoginScreen(),
+        '/mentorview': (context) => Mentor_View(),
+        '/update': (context) => updatestd(),
+      },
+      initialRoute: '/splash', // Set initial route to SplashScreen
     );
   }
 }
