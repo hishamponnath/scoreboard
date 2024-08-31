@@ -32,15 +32,15 @@ class _Mentor_ViewState extends State<Mentor_View> {
                     _searchQuery = value.toLowerCase();
                   });
                 },
-                decoration: InputDecoration(
+                decoration: const InputDecoration(
                   hintText: 'Search by name...',
                   hintStyle: TextStyle(color: Colors.white70),
                   border: InputBorder.none,
                 ),
-                style: TextStyle(color: Colors.white),
+                style: const TextStyle(color: Colors.white),
                 autofocus: true,
               )
-            : Text(
+            : const Text(
                 'STUDENTS SCORE',
                 style: TextStyle(
                   fontSize: 20,
@@ -49,16 +49,29 @@ class _Mentor_ViewState extends State<Mentor_View> {
                 ),
               ),
         backgroundColor: Colors.blue[900],
-        iconTheme: IconThemeData(color: Colors.white),
+        iconTheme: const IconThemeData(color: Colors.white),
         leading: !_isSearching
             ? IconButton(
-                icon: Icon(Icons.arrow_back),
+                icon: const Icon(Icons.arrow_back),
                 onPressed: () {
                   Navigator.pop(context);
                 },
               )
             : null,
         actions: [
+          IconButton(onPressed: () {
+Navigator.pushNamed(context, '/addevent');
+
+
+
+
+
+
+
+
+
+
+          }, icon: const Icon(Icons.camera_alt)),
           IconButton(
             icon: Icon(_isSearching ? Icons.close : Icons.search),
             onPressed: () {
@@ -96,21 +109,21 @@ class _Mentor_ViewState extends State<Mentor_View> {
                 int percentageValue = (progressValue * 100).toInt();
 
                 return Padding(
-                  padding: EdgeInsets.all(10.0),
+                  padding: const EdgeInsets.all(10.0),
                   child: Card(
                     elevation: 4,
-                    color: Color.fromARGB(255, 204, 209, 213),
+                    color: const Color.fromARGB(255, 204, 209, 213),
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(20),
                     ),
-                    shadowColor: Color.fromARGB(255, 206, 205, 205),
+                    shadowColor: const Color.fromARGB(255, 206, 205, 205),
                     child: SizedBox(
                       height: 100,
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
                           Padding(
-                            padding: EdgeInsets.all(8.0),
+                            padding: const EdgeInsets.all(8.0),
                             child: Stack(
                               alignment: Alignment.center,
                               children: [
@@ -121,14 +134,15 @@ class _Mentor_ViewState extends State<Mentor_View> {
                                     value: progressValue,
                                     strokeWidth: 8.0,
                                     backgroundColor: Colors.grey.shade300,
-                                    valueColor: AlwaysStoppedAnimation<Color>(
+                                    valueColor:
+                                        const AlwaysStoppedAnimation<Color>(
                                       Color.fromARGB(255, 10, 29, 151),
                                     ),
                                   ),
                                 ),
                                 Text(
                                   '$percentageValue%',
-                                  style: TextStyle(
+                                  style: const TextStyle(
                                     fontSize: 20,
                                     fontWeight: FontWeight.bold,
                                   ),
@@ -138,14 +152,14 @@ class _Mentor_ViewState extends State<Mentor_View> {
                           ),
                           Expanded(
                             child: Padding(
-                              padding: EdgeInsets.all(15.0),
+                              padding: const EdgeInsets.all(15.0),
                               child: Column(
                                 mainAxisAlignment: MainAxisAlignment.center,
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
                                   Text(
                                     studentsSnap['studentname'],
-                                    style: TextStyle(
+                                    style: const TextStyle(
                                       fontSize: 28,
                                       fontWeight: FontWeight.bold,
                                     ),
@@ -154,7 +168,7 @@ class _Mentor_ViewState extends State<Mentor_View> {
                                   ),
                                   Text(
                                     studentsSnap['course'],
-                                    style: TextStyle(
+                                    style: const TextStyle(
                                       fontSize: 18,
                                     ),
                                     overflow: TextOverflow.ellipsis,
@@ -180,7 +194,7 @@ class _Mentor_ViewState extends State<Mentor_View> {
                                     },
                                   );
                                 },
-                                icon: Icon(Icons.edit),
+                                icon: const Icon(Icons.edit),
                                 iconSize: 30,
                                 color: Colors.blue,
                               ),
@@ -188,7 +202,7 @@ class _Mentor_ViewState extends State<Mentor_View> {
                                 onPressed: () {
                                   deletestudent(studentsSnap.id);
                                 },
-                                icon: Icon(Icons.delete),
+                                icon: const Icon(Icons.delete),
                                 iconSize: 30,
                                 color: Colors.red,
                               ),
@@ -202,7 +216,7 @@ class _Mentor_ViewState extends State<Mentor_View> {
               },
             );
           }
-          return Center(
+          return const Center(
             child: CircularProgressIndicator(),
           );
         },

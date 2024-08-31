@@ -19,7 +19,7 @@ class _UploadImageScreenState extends State<UploadImageScreen> {
       setState(() {
         _image = File(pickedFile.path);
       });
-    }
+    } 
   }
 
   Future<void> _uploadImage() async {
@@ -87,3 +87,4 @@ void main() {
     home: UploadImageScreen(),
   ));
 }
+
