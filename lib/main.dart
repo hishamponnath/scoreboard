@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+
 import 'package:scoreboardapp/addevents.dart';
 import 'package:scoreboardapp/addstudents.dart';
 import 'package:scoreboardapp/event.dart';
@@ -34,6 +35,7 @@ class scoreapp extends StatelessWidget {
         '/update': (context) => const updatestd(),
         '/events': (context) => const Events_Screen(),
         '/addevent': (context) => const AddEventScreen(),
+        
       },
       initialRoute: '/splash',
     );

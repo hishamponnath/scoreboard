@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -68,6 +69,15 @@ class _HomeScreenState extends State<HomeScreen> {
     }
   }
 
+  _launchUrl() async {
+    const url = "https://aitrichacademy.com"; // Use lowercase for variable name
+    final Uri uri = Uri.parse(url); // Convert the URL string to a Uri object
+
+    if (!await launchUrl(uri, mode: LaunchMode.externalApplication)) {
+      throw "Could not launch $url";
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -125,7 +135,34 @@ class _HomeScreenState extends State<HomeScreen> {
             ),
             _buildDrawerButton(context, "Mentor", '/login', Icons.person),
             _buildDrawerButton(context, "Events", '/events', Icons.event),
-            _buildDrawerButton(context, "About Us", '/about', Icons.info),
+            // _buildDrawerButton(context, "About Us", '/aboutscreen', Icons.info),
+            Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: SizedBox(
+                height: 50,
+                width: double.infinity,
+                child: ElevatedButton(
+                  onPressed: _launchUrl,
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.white,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(30),
+                    ),
+                  ),
+                  child: const Row(
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    children: [
+                      Icon(Icons.info_outline, color: Colors.black),
+                      SizedBox(width: 30),
+                      Text(
+                        "About Us",
+                        style: TextStyle(color: Colors.black, fontSize: 20),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ),
           ],
         ),
       ),
@@ -149,7 +186,7 @@ class _HomeScreenState extends State<HomeScreen> {
             });
 
             if (_noDataFound) {
-              return Center(
+              return const Center(
                 child: Text(
                   'No data found',
                   style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
@@ -247,7 +284,7 @@ class _HomeScreenState extends State<HomeScreen> {
               },
             );
           }
-          return Center(
+          return const Center(
             child: CircularProgressIndicator(),
           );
         },
