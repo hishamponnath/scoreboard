@@ -33,7 +33,7 @@ class scoreapp extends StatelessWidget {
         '/mentorview': (context) => const Mentor_View(),
         '/update': (context) => const updatestd(),
         '/events': (context) => const Events_Screen(),
-        '/addevent': (context) => const addeventscreen(),
+        '/addevent': (context) => const AddEventScreen(),
       },
       initialRoute: '/splash',
     );

@@ -63,14 +63,6 @@ class _Mentor_ViewState extends State<Mentor_View> {
 Navigator.pushNamed(context, '/addevent');
 
 
-
-
-
-
-
-
-
-
           }, icon: const Icon(Icons.camera_alt)),
           IconButton(
             icon: Icon(_isSearching ? Icons.close : Icons.search),
