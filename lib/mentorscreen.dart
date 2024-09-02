@@ -59,11 +59,12 @@ class _Mentor_ViewState extends State<Mentor_View> {
               )
             : null,
         actions: [
-          IconButton(onPressed: () {
-Navigator.pushNamed(context, '/addevent');
-
-
-          }, icon: const Icon(Icons.camera_alt)),
+          IconButton(
+            onPressed: () {
+              Navigator.pushNamed(context, '/addevent');
+            },
+            icon: const Icon(Icons.camera_alt),
+          ),
           IconButton(
             icon: Icon(_isSearching ? Icons.close : Icons.search),
             onPressed: () {
@@ -86,6 +87,15 @@ Navigator.pushNamed(context, '/addevent');
               final studentName = doc['studentname'].toLowerCase();
               return studentName.contains(_searchQuery);
             }).toList();
+
+            if (filteredDocs.isEmpty) {
+              return Center(
+                child: Text(
+                  'No data found',
+                  style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+                ),
+              );
+            }
 
             return ListView.builder(
               itemCount: filteredDocs.length,

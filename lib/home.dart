@@ -14,6 +14,7 @@ class _HomeScreenState extends State<HomeScreen> {
   final TextEditingController _searchController = TextEditingController();
   List<DocumentSnapshot> _filteredStudents = [];
   bool _isSearchVisible = false;
+  bool _noDataFound = false; // Track if no data is found
 
   @override
   void initState() {
@@ -25,11 +26,16 @@ class _HomeScreenState extends State<HomeScreen> {
     String query = _searchController.text.toLowerCase();
     setState(() {
       _filteredStudents = [];
+      _noDataFound = false;
       students.get().then((QuerySnapshot querySnapshot) {
         for (var doc in querySnapshot.docs) {
           if (doc['studentname'].toString().toLowerCase().contains(query)) {
             _filteredStudents.add(doc);
           }
+        }
+
+        if (_filteredStudents.isEmpty && query.isNotEmpty) {
+          _noDataFound = true;
         }
 
         // Sort filtered students by score in descending order
@@ -94,6 +100,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 if (!_isSearchVisible) {
                   _searchController.clear();
                   _filteredStudents.clear();
+                  _noDataFound = false;
                 }
               });
             },
@@ -140,6 +147,15 @@ class _HomeScreenState extends State<HomeScreen> {
                   : int.tryParse(b['score'].toString()) ?? 0;
               return scoreB.compareTo(scoreA);
             });
+
+            if (_noDataFound) {
+              return Center(
+                child: Text(
+                  'No data found',
+                  style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+                ),
+              );
+            }
 
             return ListView.builder(
               itemCount: data.length,
@@ -231,7 +247,9 @@ class _HomeScreenState extends State<HomeScreen> {
               },
             );
           }
-          return Container();
+          return Center(
+            child: CircularProgressIndicator(),
+          );
         },
       ),
     );
