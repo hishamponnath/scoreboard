@@ -69,6 +69,16 @@ class _HomeScreenState extends State<HomeScreen> {
     }
   }
 
+  Color _getIconColor(int score) {
+    if (score >= 90) {
+      return Colors.amber; // Gold
+    } else if (score >= 70) {
+      return const Color.fromARGB(255, 225, 225, 225); // Silver
+    } else {
+      return const Color.fromARGB(255, 161, 116, 100); // Bronze
+    }
+  }
+
   _launchUrl() async {
     const url = "https://aitrichacademy.com"; // Use lowercase for variable name
     final Uri uri = Uri.parse(url); // Convert the URL string to a Uri object
@@ -81,6 +91,7 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.grey[300],
       appBar: AppBar(
         centerTitle: true,
         title: _isSearchVisible
@@ -99,7 +110,23 @@ class _HomeScreenState extends State<HomeScreen> {
                 style:
                     TextStyle(fontWeight: FontWeight.bold, color: Colors.white),
               ),
-        backgroundColor: Colors.blue[900],
+        flexibleSpace: Stack(
+          children: <Widget>[
+            Container(
+              decoration: const BoxDecoration(
+                image: DecorationImage(
+                  image: AssetImage(
+                      "image/appbar4.jpg"), // Replace with your image asset
+                  fit: BoxFit.cover,
+                ),
+              ),
+            ),
+            Container(
+              color: Colors.blue[900]!
+                  .withOpacity(0.7), // Background color with transparency
+            ),
+          ],
+        ),
         iconTheme: const IconThemeData(color: Colors.white),
         actions: [
           IconButton(
@@ -118,12 +145,13 @@ class _HomeScreenState extends State<HomeScreen> {
         ],
       ),
       drawer: Drawer(
-        backgroundColor: const Color.fromARGB(255, 211, 210, 214),
+        backgroundColor: Colors.grey[300],
         child: Column(
           children: [
             DrawerHeader(
-              decoration:
-                  const BoxDecoration(color: Color.fromARGB(255, 1, 28, 69)),
+              decoration: const BoxDecoration(
+                color: Color.fromARGB(255, 1, 28, 69),
+              ),
               child: Container(
                 decoration: const BoxDecoration(
                   image: DecorationImage(
@@ -208,79 +236,114 @@ class _HomeScreenState extends State<HomeScreen> {
                 }
                 int percentageValue = (progressValue * 100).toInt();
                 Color progressBarColor = _getProgressBarColor(percentageValue);
+                Color iconColor = _getIconColor(percentageValue);
 
                 return Padding(
-                  padding: const EdgeInsets.all(10.0),
-                  child: Card(
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(20),
-                    ),
-                    elevation: 2,
-                    color: const Color.fromARGB(255, 229, 223, 255),
-                    child: SizedBox(
-                      height: 100,
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Expanded(
-                            child: Padding(
-                              padding: const EdgeInsets.all(15.0),
-                              child: Column(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Text(
-                                    studentsSnap['studentname'],
-                                    style: const TextStyle(
-                                      fontSize: 28,
-                                      fontWeight: FontWeight.bold,
-                                    ),
-                                    overflow: TextOverflow.ellipsis,
-                                    maxLines: 1,
-                                  ),
-                                  Text(
-                                    studentsSnap['course'],
-                                    style: const TextStyle(
-                                      fontSize: 18,
-                                    ),
-                                    overflow: TextOverflow.ellipsis,
-                                    maxLines: 1,
-                                  ),
-                                ],
-                              ),
-                            ),
-                          ),
-                          Padding(
-                            padding: const EdgeInsets.all(8.0),
-                            child: Stack(
-                              alignment: Alignment.center,
-                              children: [
-                                SizedBox(
-                                  width: 85,
-                                  height: 100,
-                                  child: CircularProgressIndicator(
-                                    value: progressValue,
-                                    strokeWidth: 8.0,
-                                    backgroundColor: Colors.grey.shade300,
-                                    valueColor: AlwaysStoppedAnimation<Color>(
-                                        progressBarColor),
-                                  ),
-                                ),
-                                Text(
-                                  '$percentageValue%',
-                                  style: const TextStyle(
-                                    fontSize: 20,
-                                    fontWeight: FontWeight.bold,
-                                  ),
-                                ),
-                              ],
-                            ),
+                    padding: const EdgeInsets.all(10.0),
+                    child: Container(
+                      decoration: BoxDecoration(
+                        image: const DecorationImage(
+                          image: AssetImage(
+                              'image/blue.jpg'), // Replace with your image path
+                          fit: BoxFit.cover, // Adjust image fit
+                        ),
+                        borderRadius:
+                            BorderRadius.circular(20), // Rounded corners
+                        color: Colors.white.withOpacity(
+                            0.8), // Optional background color with transparency
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.grey.withOpacity(0.5),
+                            spreadRadius: 2,
+                            blurRadius: 5,
+                            offset: const Offset(
+                                0, 3), // changes position of shadow
                           ),
                         ],
                       ),
-                    ),
-                  ),
-                );
+                      child: ClipRRect(
+                        borderRadius: BorderRadius.circular(20),
+                        child: SizedBox(
+                          height: 100,
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Expanded(
+                                child: Padding(
+                                  padding: const EdgeInsets.all(15.0),
+                                  child: Column(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      Text(
+                                        studentsSnap['studentname'],
+                                        style: const TextStyle(
+                                          fontSize: 28,
+                                          fontWeight: FontWeight.bold,
+                                          color: Colors
+                                              .white, // Adjust text color if necessary
+                                        ),
+                                        overflow: TextOverflow.ellipsis,
+                                        maxLines: 1,
+                                      ),
+                                      Text(
+                                        studentsSnap['course'],
+                                        style: const TextStyle(
+                                          fontSize: 18,
+                                          color: Colors
+                                              .white, // Adjust text color if necessary
+                                        ),
+                                        overflow: TextOverflow.ellipsis,
+                                        maxLines: 1,
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ),
+                              Icon(
+                                Icons.shield,
+                                size: 30,
+                                color:
+                                    iconColor, // Set icon color based on score
+                              ),
+                              const SizedBox(
+                                width: 20,
+                              ),
+                              Padding(
+                                padding: const EdgeInsets.all(8.0),
+                                child: Stack(
+                                  alignment: Alignment.center,
+                                  children: [
+                                    SizedBox(
+                                      width: 85,
+                                      height: 100,
+                                      child: CircularProgressIndicator(
+                                        value: progressValue,
+                                        strokeWidth: 8.0,
+                                        backgroundColor: Colors.grey.shade300,
+                                        valueColor:
+                                            AlwaysStoppedAnimation<Color>(
+                                                progressBarColor),
+                                      ),
+                                    ),
+                                    Text(
+                                      '$percentageValue%',
+                                      style: const TextStyle(
+                                        fontSize: 20,
+                                        fontWeight: FontWeight.bold,
+                                        color: Colors
+                                            .white, // Adjust text color if necessary
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                    ));
               },
             );
           }

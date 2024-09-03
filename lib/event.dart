@@ -22,7 +22,15 @@ class _Events_ScreenState extends State<Events_Screen> {
           style: TextStyle(color: Colors.white),
         ),
         centerTitle: true,
-        backgroundColor: Colors.blue[900],
+        flexibleSpace: Container(
+          decoration: const BoxDecoration(
+            image: DecorationImage(
+              image: AssetImage(
+                  "image/appbar4.jpg"), // Replace with your image path
+              fit: BoxFit.cover,
+            ),
+          ),
+        ),
       ),
       body: StreamBuilder<QuerySnapshot>(
         stream: FirebaseFirestore.instance
