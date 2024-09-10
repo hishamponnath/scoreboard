@@ -1,6 +1,44 @@
 import 'dart:async';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:cached_network_image/cached_network_image.dart';
+import 'package:flutter/services.dart';
+
+// Full-Screen Image Viewer Widget
+class FullScreenImageViewer extends StatelessWidget {
+  final String imageUrl;
+
+  const FullScreenImageViewer({super.key, required this.imageUrl});
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      backgroundColor: Colors.black,
+      appBar: AppBar(
+        backgroundColor: Colors.transparent,
+        elevation: 0,
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.close),
+            onPressed: () => Navigator.of(context).pop(),
+          ),
+        ],
+      ),
+      body: Center(
+        child: InteractiveViewer(
+          child: CachedNetworkImage(
+            imageUrl: imageUrl,
+            placeholder: (context, url) => const Center(
+              child: CircularProgressIndicator(),
+            ),
+            errorWidget: (context, url, error) => const Icon(Icons.error),
+            fit: BoxFit.contain,
+          ),
+        ),
+      ),
+    );
+  }
+}
 
 class Events_Screen extends StatefulWidget {
   const Events_Screen({super.key});
@@ -11,6 +49,28 @@ class Events_Screen extends StatefulWidget {
 
 class _Events_ScreenState extends State<Events_Screen> {
   List<String> _imageUrls = [];
+
+  @override
+  void initState() {
+    super.initState();
+    // Disable landscape mode
+    SystemChrome.setPreferredOrientations([
+      DeviceOrientation.portraitUp,
+      DeviceOrientation.portraitDown,
+    ]);
+  }
+
+  @override
+  void dispose() {
+    // Re-enable all orientations when leaving this screen
+    SystemChrome.setPreferredOrientations([
+      DeviceOrientation.portraitUp,
+      DeviceOrientation.portraitDown,
+      DeviceOrientation.landscapeLeft,
+      DeviceOrientation.landscapeRight,
+    ]);
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -54,6 +114,9 @@ class _Events_ScreenState extends State<Events_Screen> {
           _imageUrls =
               imageDocs.map((doc) => doc['imageUrl'] as String).toList();
 
+          // Pre-cache all the images before displaying them
+          _preCacheImages(context);
+
           return ListView.builder(
             itemCount: _imageUrls.length,
             itemBuilder: (context, index) {
@@ -61,41 +124,35 @@ class _Events_ScreenState extends State<Events_Screen> {
 
               return Padding(
                 padding: const EdgeInsets.all(8.0),
-                child: FutureBuilder<Size>(
-                  future: _getImageSize(imageUrl),
-                  builder: (context, snapshot) {
-                    if (snapshot.connectionState == ConnectionState.waiting) {
-                      return const Center(child: CircularProgressIndicator());
-                    }
-
-                    if (snapshot.hasError || !snapshot.hasData) {
-                      return Container(
-                        color: Colors.grey[300],
-                        height: 300, // Default height if something goes wrong
-                        child: const Center(child: Text('Error loading image')),
-                      );
-                    }
-
-                    final size = snapshot.data!;
-                    final double aspectRatio = size.width / size.height;
-
-                    return AspectRatio(
-                      aspectRatio: aspectRatio,
-                      child: Container(
-                        decoration: BoxDecoration(
-                          color: Colors.grey[300],
-                          borderRadius: BorderRadius.circular(10),
-                        ),
-                        child: ClipRRect(
-                          borderRadius: BorderRadius.circular(10),
-                          child: Image.network(
-                            imageUrl,
-                            fit: BoxFit.cover,
-                          ),
-                        ),
+                child: GestureDetector(
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) =>
+                            FullScreenImageViewer(imageUrl: imageUrl),
                       ),
                     );
                   },
+                  child: ClipRRect(
+                    borderRadius: BorderRadius.circular(10),
+                    child: CachedNetworkImage(
+                      imageUrl: imageUrl,
+                      placeholder: (context, url) => const Center(
+                        child: CircularProgressIndicator(),
+                      ),
+                      errorWidget: (context, url, error) => Container(
+                        color: Colors.grey[300],
+                        height: 300, // Default height if something goes wrong
+                        child: const Center(child: Text('Error loading image')),
+                      ),
+                      fit: BoxFit.cover,
+                      width: double.infinity,
+                      height: 300, // Maintain a consistent height for images
+                      fadeInDuration: const Duration(
+                          milliseconds: 200), // Fade effect for better UX
+                    ),
+                  ),
                 ),
               );
             },
@@ -105,15 +162,10 @@ class _Events_ScreenState extends State<Events_Screen> {
     );
   }
 
-  Future<Size> _getImageSize(String imageUrl) async {
-    final Image image = Image.network(imageUrl);
-    final Completer<Size> completer = Completer<Size>();
-    image.image.resolve(const ImageConfiguration()).addListener(
-      ImageStreamListener((ImageInfo info, bool _) {
-        completer.complete(
-            Size(info.image.width.toDouble(), info.image.height.toDouble()));
-      }),
-    );
-    return completer.future;
+  // Pre-cache all images to avoid loading while scrolling
+  void _preCacheImages(BuildContext context) {
+    for (String imageUrl in _imageUrls) {
+      precacheImage(NetworkImage(imageUrl), context);
+    }
   }
 }
