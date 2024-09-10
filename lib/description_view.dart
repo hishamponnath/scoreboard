@@ -30,7 +30,7 @@ class DetailScreen extends StatelessWidget {
     if (score >= 90) {
       return Colors.amber; // Gold
     } else if (score >= 70) {
-      return const Color.fromARGB(255, 225, 225, 225); // Silver
+      return const Color.fromARGB(255, 195, 192, 192); // Silver
     } else {
       return const Color.fromARGB(255, 161, 116, 100); // Bronze
     }
@@ -50,7 +50,6 @@ class DetailScreen extends StatelessWidget {
     Color iconColor = _getIconColor(percentageValue);
 
     return Scaffold(
-      backgroundColor: Colors.cyanAccent[50],
       appBar: AppBar(
         flexibleSpace: Stack(
           children: <Widget>[
@@ -76,6 +75,16 @@ class DetailScreen extends StatelessWidget {
           studentName,
           style: const TextStyle(fontSize: 30, color: Colors.white),
         ),
+        actions: [
+          Padding(
+            padding: const EdgeInsets.only(right: 16.0),
+            child: Icon(
+              Icons.shield,
+              size: 30,
+              color: iconColor, // Set icon color based on score
+            ),
+          ),
+        ],
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
@@ -85,22 +94,19 @@ class DetailScreen extends StatelessWidget {
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Text(
-                  'Course: $course',
-                  style: const TextStyle(
-                      fontSize: 20, fontWeight: FontWeight.bold),
+                // Wrapping Text with Expanded to prevent overflow
+                Expanded(
+                  child: Text(
+                    'Course: $course',
+                    style: const TextStyle(
+                        fontSize: 20, fontWeight: FontWeight.bold),
+                    overflow: TextOverflow
+                        .ellipsis, // Adds ellipsis if text is too long
+                  ),
                 ),
-                // Row containing shield icon and progress bar
+                // Circular progress bar displaying the score
                 Row(
                   children: [
-                    // Shield icon
-                    Icon(
-                      Icons.shield,
-                      size: 30,
-                      color: iconColor, // Set icon color based on score
-                    ),
-                    const SizedBox(width: 20),
-                    // Circular progress bar displaying the score
                     Stack(
                       alignment: Alignment.center,
                       children: [
@@ -131,7 +137,7 @@ class DetailScreen extends StatelessWidget {
             ),
             const SizedBox(height: 10),
             Text(
-              'Score: $score',
+              'Total Score : $score',
               style: const TextStyle(fontSize: 18),
             ),
             const SizedBox(height: 20),
