@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:scoreboardapp/description_view.dart';
 import 'package:url_launcher/url_launcher.dart';
+
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -239,7 +241,22 @@ class _HomeScreenState extends State<HomeScreen> {
                 Color iconColor = _getIconColor(percentageValue);
 
                 return Padding(
-                    padding: const EdgeInsets.all(10.0),
+                  padding: const EdgeInsets.all(10.0),
+                  child: GestureDetector(
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => DetailScreen(
+                            studentName: studentsSnap['studentname'],
+                            course: studentsSnap['course'],
+                            score: studentsSnap['score'],
+                            descriptions: List<String>.from(
+                                studentsSnap['descriptions'] ?? []),
+                          ),
+                        ),
+                      );
+                    },
                     child: Container(
                       decoration: BoxDecoration(
                         image: const DecorationImage(
@@ -257,7 +274,7 @@ class _HomeScreenState extends State<HomeScreen> {
                             spreadRadius: 2,
                             blurRadius: 5,
                             offset: const Offset(
-                                0, 3), // changes position of shadow
+                                0, 3), // Changes position of shadow
                           ),
                         ],
                       ),
@@ -307,9 +324,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                 color:
                                     iconColor, // Set icon color based on score
                               ),
-                              const SizedBox(
-                                width: 20,
-                              ),
+                              const SizedBox(width: 20),
                               Padding(
                                 padding: const EdgeInsets.all(8.0),
                                 child: Stack(
@@ -343,7 +358,9 @@ class _HomeScreenState extends State<HomeScreen> {
                           ),
                         ),
                       ),
-                    ));
+                    ),
+                  ),
+                );
               },
             );
           }

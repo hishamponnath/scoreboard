@@ -4,7 +4,7 @@ import 'package:scoreboardapp/addevents.dart';
 import 'package:scoreboardapp/addstudents.dart';
 import 'package:scoreboardapp/event.dart';
 import 'package:scoreboardapp/home.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
+
 import 'package:firebase_core/firebase_core.dart';
 import 'package:scoreboardapp/mentor_login.dart';
 import 'package:scoreboardapp/mentorscreen.dart';
@@ -29,13 +29,12 @@ class scoreapp extends StatelessWidget {
         '/splash': (context) => SplashScreen(
               onThemeModeChanged: (ThemeMode mode) {},
             ),
-        '/add': (context) => const addstd(),
+        '/add': (context) => const AddStudentScreen(),
         '/login': (context) => const LoginScreen(),
         '/mentorview': (context) => const Mentor_View(),
         '/update': (context) => const updatestd(),
         '/events': (context) => const Events_Screen(),
         '/addevent': (context) => const AddEventScreen(),
-        
       },
       initialRoute: '/splash',
     );

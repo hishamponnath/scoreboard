@@ -15,15 +15,36 @@ class _updatestdState extends State<updatestd> {
   TextEditingController stdname = TextEditingController();
   TextEditingController stdcourse = TextEditingController();
   TextEditingController stdscore = TextEditingController();
+  List<TextEditingController> descriptionControllers = [];
 
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      final args = ModalRoute.of(context)!.settings.arguments as Map;
+      final descriptions = args['descriptions'] as List<dynamic>?;
+
+      if (descriptions != null) {
+        descriptionControllers.clear();
+        for (var description in descriptions) {
+          descriptionControllers.add(TextEditingController(text: description));
+        }
+        setState(() {}); // Refresh the UI
+      }
+    });
+  }
+
+  // Function to update students in Firestore
   void updatedstudents(docId) {
     final data = {
       'studentname': stdname.text,
       'course': stdcourse.text,
       'score': stdscore.text,
+      'descriptions': descriptionControllers
+          .map((controller) => controller.text)
+          .toList(), // Collect updated descriptions
     };
 
-    // Ensure score is below 100 before updating
     int scoreValue = int.tryParse(stdscore.text) ?? 0;
     if (scoreValue <= 100) {
       students.doc(docId).update(data).then((value) => Navigator.pop(context));
@@ -36,7 +57,23 @@ class _updatestdState extends State<updatestd> {
     }
   }
 
-  // Function to capitalize the first letter and prevent lowering it
+  // Function to add a new description field
+  void addDescriptionField() {
+    setState(() {
+      descriptionControllers.add(TextEditingController());
+    });
+  }
+
+  // Function to remove a description field
+  void removeDescriptionField(int index) {
+    setState(() {
+      if (descriptionControllers.length > 1) {
+        descriptionControllers.removeAt(index);
+      }
+    });
+  }
+
+  // Function to capitalize the first letter
   String capitalizeFirstLetter(String input) {
     if (input.isEmpty) return input;
     return input[0].toUpperCase() + input.substring(1);
@@ -111,7 +148,6 @@ class _updatestdState extends State<updatestd> {
                   if (value.isNotEmpty) {
                     int enteredValue = int.tryParse(value) ?? 0;
 
-                    // Restrict value to below 100
                     if (enteredValue > 100) {
                       stdscore.text = '100';
                       stdscore.selection = TextSelection.fromPosition(
@@ -120,6 +156,44 @@ class _updatestdState extends State<updatestd> {
                     }
                   }
                 },
+              ),
+            ),
+            Expanded(
+              child: ListView.builder(
+                itemCount: descriptionControllers.length,
+                itemBuilder: (context, index) {
+                  return Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: Row(
+                      children: [
+                        Expanded(
+                          child: TextField(
+                            controller: descriptionControllers[index],
+                            decoration: InputDecoration(
+                              border: const OutlineInputBorder(),
+                              label: Text("Description ${index + 1}"),
+                            ),
+                          ),
+                        ),
+                        IconButton(
+                          icon: const Icon(Icons.remove_circle,
+                              color: Colors.red),
+                          onPressed: () {
+                            removeDescriptionField(index);
+                          },
+                        ),
+                      ],
+                    ),
+                  );
+                },
+              ),
+            ),
+            TextButton.icon(
+              onPressed: addDescriptionField,
+              icon: const Icon(Icons.add, color: Colors.blue),
+              label: const Text(
+                "Add More Descriptions",
+                style: TextStyle(color: Colors.blue),
               ),
             ),
             ElevatedButton(

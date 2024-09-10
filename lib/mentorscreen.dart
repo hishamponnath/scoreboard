@@ -193,6 +193,9 @@ class _Mentor_ViewState extends State<Mentor_View> {
                                       'course': studentsSnap['course'],
                                       'score': studentsSnap['score'],
                                       'id': studentsSnap.id,
+                                      'descriptions':
+                                          studentsSnap['descriptions'] ??
+                                              [], // Pass descriptions
                                     },
                                   );
                                 },
