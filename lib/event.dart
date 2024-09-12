@@ -1,44 +1,8 @@
-import 'dart:async';
+import 'dart:ui';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/services.dart';
-
-// Full-Screen Image Viewer Widget
-class FullScreenImageViewer extends StatelessWidget {
-  final String imageUrl;
-
-  const FullScreenImageViewer({super.key, required this.imageUrl});
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: Colors.black,
-      appBar: AppBar(
-        backgroundColor: Colors.transparent,
-        elevation: 0,
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.close),
-            onPressed: () => Navigator.of(context).pop(),
-          ),
-        ],
-      ),
-      body: Center(
-        child: InteractiveViewer(
-          child: CachedNetworkImage(
-            imageUrl: imageUrl,
-            placeholder: (context, url) => const Center(
-              child: CircularProgressIndicator(),
-            ),
-            errorWidget: (context, url, error) => const Icon(Icons.error),
-            fit: BoxFit.contain,
-          ),
-        ),
-      ),
-    );
-  }
-}
 
 class Events_Screen extends StatefulWidget {
   const Events_Screen({super.key});
@@ -126,13 +90,7 @@ class _Events_ScreenState extends State<Events_Screen> {
                 padding: const EdgeInsets.all(8.0),
                 child: GestureDetector(
                   onTap: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) =>
-                            FullScreenImageViewer(imageUrl: imageUrl),
-                      ),
-                    );
+                    _showImageDialog(context, imageUrl);
                   },
                   child: ClipRRect(
                     borderRadius: BorderRadius.circular(10),
@@ -159,6 +117,48 @@ class _Events_ScreenState extends State<Events_Screen> {
           );
         },
       ),
+    );
+  }
+
+  // Show the image in a popup dialog with blurred background
+  void _showImageDialog(BuildContext context, String imageUrl) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return Stack(
+          children: [
+            // Blurred background
+            BackdropFilter(
+              filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
+              child: Container(
+                color: Colors.black.withOpacity(0.5),
+              ),
+            ),
+            Center(
+              child: Dialog(
+                backgroundColor: Colors.transparent,
+                insetPadding: const EdgeInsets.all(10),
+                child: GestureDetector(
+                  onTap: () {
+                    Navigator.of(context).pop(); // Close the dialog on tap
+                  },
+                  child: InteractiveViewer(
+                    child: CachedNetworkImage(
+                      imageUrl: imageUrl,
+                      placeholder: (context, url) => const Center(
+                        child: CircularProgressIndicator(),
+                      ),
+                      errorWidget: (context, url, error) =>
+                          const Icon(Icons.error),
+                      fit: BoxFit.contain,
+                    ),
+                  ),
+                ),
+              ),
+            ),
+          ],
+        );
+      },
     );
   }
 
